@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELLINFO.com - Mobile Phone Information Hub</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Load Font Awesome for Icons (Social Media, etc.) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Custom styles using the soothing pastel scheme */
+        :root {
+            --pastel-blue: #7dd3fc;  /* sky-400 */
+            --pastel-green: #a7f3d0; /* emerald-200 */
+            --background-light: #f0fdf4; /* Pale Ivory/Green */
+            --text-dark: #1f2937;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+        }
+        .section-heading {
+            border-left: 5px solid var(--pastel-blue);
+            padding-left: 1rem;
+        }
+        .brand-card-link {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer; 
+            display: block; 
+        }
+        .brand-card-content {
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            background-color: white;
+            min-height: 100%; /* Ensure uniform height in grid */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .brand-card-link:hover .brand-card-content {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--pastel-blue);
+        }
+        /* Style for Brand Detail Page */
+        .detail-header {
+            background-color: #e0fdf0; 
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #c8e6c9;
+        }
+        .detail-header h2 {
+            font-size: 2.5rem; /* Adjusted for better mobile fit */
+            font-weight: 800;
+            color: var(--text-dark); 
+            margin-bottom: 0.25rem;
+            text-align: center; 
+        }
+        .detail-header p {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #4b5563; 
+        }
+        .detail-doc-link {
+            color: #1d4ed8; 
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .detail-row:hover {
+            background-color: #f0fdf4;
+        }
+
+        /* Mobile Menu Styles */
+        #mobile-menu {
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+        }
+        #mobile-menu.open {
+            max-height: 500px; /* Arbitrary large height */
+            opacity: 1;
+        }
+        
+        /* Comparison Table Styling for Responsiveness */
+        #comparison-table {
+            width: 100%;
+            text-align: center;
+        }
+        #comparison-table th, #comparison-table td {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            white-space: nowrap; /* Prevent feature/value wrap */
+        }
+        #comparison-table .feature-cell {
+            text-align: left;
+            padding-left: 1.5rem;
+            min-width: 150px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header and Navigation (Menu) -->
+    <header class="sticky top-0 bg-white shadow-lg z-20"> <!-- Z-index increased for mobile menu context -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <!-- Logo/Site Name -->
+            <h1 class="text-3xl font-extrabold text-sky-600">
+                <span class="bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">CELL</span>INFO
+            </h1>
+
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex space-x-6 font-semibold items-center">
+                <a href="#" class="text-gray-700 hover:text-sky-500 transition duration-150" onclick="showSection('home-sections')">Home</a>
+                <a href="#brands" class="text-gray-700 hover:text-sky-500 transition duration-150" onclick="showSection('home-sections')">Brands</a>
+                <a href="#features" class="text-gray-700 hover:text-sky-500 transition duration-150" onclick="showSection('home-sections')">Features</a>
+                <a href="#" class="px-3 py-1 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition duration-150" onclick="showComparison('custom')">Compare Phones</a>
+                
+                <!-- Login/Sign Up Button -->
+                <a href="#" class="px-3 py-1 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition duration-150 font-medium shadow-md" onclick="showSection('auth-view')">
+                    Login / Sign Up
+                </a>
+            </nav>
+
+            <!-- Mobile Menu Button (Hamburger) -->
+            <button class="md:hidden text-gray-700 hover:text-sky-500 focus:outline-none p-2 rounded-lg hover:bg-gray-100" onclick="toggleMobileMenu()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Container (Initially Hidden) -->
+    <div id="mobile-menu" class="bg-white md:hidden shadow-lg border-t border-gray-100 z-10">
+        <nav class="flex flex-col space-y-2 p-4 font-medium text-lg">
+            <!-- Navigation links duplicate from desktop for mobile -->
+            <a href="#" class="py-2 text-gray-700 hover:text-sky-500 hover:bg-gray-50 px-2 rounded-lg transition duration-150" onclick="showSection('home-sections')">Home</a>
+            <a href="#brands" class="py-2 text-gray-700 hover:text-sky-500 hover:bg-gray-50 px-2 rounded-lg transition duration-150" onclick="showSection('home-sections')">Brands</a>
+            <a href="#features" class="py-2 text-gray-700 hover:text-sky-500 hover:bg-gray-50 px-2 rounded-lg transition duration-150" onclick="showSection('home-sections')">Features</a>
+            <a href="#" class="py-2 text-emerald-700 hover:text-emerald-500 hover:bg-emerald-50 px-2 rounded-lg transition duration-150" onclick="showComparison('custom')">Compare Phones</a>
+            
+            <!-- Login/Sign Up Button -->
+            <a href="#" class="mt-4 py-3 text-center rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition duration-150 font-medium shadow-md" onclick="showSection('auth-view')">
+                Login / Sign Up
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content Area - Contains HOME sections -->
+    <div id="home-sections">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+            <!-- Hero Section & Search Bar -->
+            <section id="hero" class="text-center py-10 md:py-16 bg-white rounded-2xl shadow-xl mb-12 border-b-8 border-sky-400/50">
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-gray-800 mb-4">
+                    Your Definitive Source for Mobile Information
+                </h2>
+                <p class="text-md sm:text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Find features, comparisons, and prices from Pin to Piano with a single click.
+                </p>
+
+                <!-- Quick Search Input (Responsive) -->
+                <div class="max-w-xl mx-auto">
+                    <div class="flex rounded-full shadow-lg overflow-hidden border-4 border-sky-300">
+                        <input type="text" placeholder="Search by Model, Feature, or Price"
+                            class="w-full px-4 sm:px-6 py-3 sm:py-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <button class="bg-sky-500 text-white px-4 sm:px-6 py-3 sm:py-4 font-semibold hover:bg-sky-600 transition duration-150">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Brands Section (Responsive Grid) -->
+            <section id="brands" class="py-8 md:py-12">
+                <h2 class="text-3xl font-bold section-heading mb-8">Explore By Brand</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+                    <!-- Brand Cards -->
+                    <a data-brand="Apple" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=APPLE" alt="Apple Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Apple</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                    <a data-brand="Samsung" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=SAMSUNG" alt="Samsung Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Samsung</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                    <a data-brand="Nokia" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=NOKIA" alt="Nokia Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Nokia</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                    <a data-brand="Google" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=GOOGLE" alt="Google Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Google</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                    <a data-brand="Xiaomi" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=XIAOMI" alt="Xiaomi Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Xiaomi</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                    <a data-brand="Motorola" class="brand-card-link">
+                        <div class="brand-card-content">
+                            <img src="https://placehold.co/100x100/f3f4f6/374151?text=MOTOROLA" alt="Motorola Logo" class="mx-auto mb-3 rounded-full h-16 w-16">
+                            <p class="font-bold text-lg text-gray-800">Motorola</p>
+                            <p class="text-sm text-gray-500">View 4 Models</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Featured Comparisons (Responsive layout adjustments) -->
+            <section id="compare" class="py-8 md:py-12">
+                <h2 class="text-3xl font-bold section-heading mb-8">Featured Comparisons</h2>
+                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border-2 border-emerald-300">
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">Comparison Options:</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Comparison 2: Flagship Showdown -->
+                        <div class="bg-emerald-50 p-4 rounded-lg">
+                            <p class="font-semibold text-emerald-800 mb-2">Flagship Showdown: Preset Comparison</p>
+                            <p class="text-gray-600 text-sm sm:text-base">Head-to-head feature comparison between the latest Apple iPhone and Samsung Galaxy flagship models. <button onclick="showComparison('different')" class="text-sky-600 hover:underline font-medium focus:outline-none">View Preset Table</button></p>
+                        </div>
+                        
+                        <!-- Custom Comparison Option -->
+                        <div class="bg-sky-50 p-4 rounded-lg border-l-4 border-sky-400">
+                            <p class="font-semibold text-sky-800 mb-2">Build Your Own Comparison</p>
+                            <p class="text-gray-600 text-sm sm:text-base">Click the button below to go to the Compare Page and select any two devices yourself.</p>
+                            <button onclick="showComparison('custom')" class="mt-3 px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition font-medium text-sm sm:text-base">Start Custom Compare</button>
+                        </div>
+
+                        <p class="text-center text-xs text-gray-500 mt-6">
+                            *Preset data refreshes monthly based on market trends.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Quick Guide (Responsive Grid) -->
+            <section id="features" class="py-8 md:py-12">
+                <h2 class="text-3xl font-bold section-heading mb-8">Quick Feature Guides</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-sky-300">
+                        <h4 class="font-bold text-xl mb-2">Camera Specs Decoded</h4>
+                        <p class="text-gray-600 text-sm">Understanding Megapixels, Aperture, and Sensor size across all major brands.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-sky-300">
+                        <h4 class="font-bold text-xl mb-2">Battery Life Analysis</h4>
+                        <p class="text-gray-600 text-sm">Compare mAh ratings and real-world usage tests for top models.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-sky-300">
+                        <h4 class="font-bold text-xl mb-2">Processor Performance</h4>
+                        <p class="text-gray-600 text-sm">See benchmarks and technical comparisons for Snapdragon, Exynos, and A-series chips.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div> <!-- End of #home-sections -->
+
+    <!-- Comparison View (Initially Hidden) -->
+    <section id="comparison-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+            <h2 id="comparison-title" class="text-3xl font-bold section-heading mb-4 sm:mb-0"></h2>
+            <!-- Navigation updated to consistently use onclick function -->
+            <button onclick="showSection('home-sections')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150 shadow-md text-sm">
+                ← Back to Home
+            </button>
+        </div>
+        
+        <!-- Comparison Type Selector -->
+        <div class="flex space-x-4 mb-8">
+            <button onclick="showComparison('custom')" id="btn-custom" class="px-5 py-2 rounded-full font-semibold transition duration-200 bg-sky-500 text-white shadow-md text-sm sm:text-base">
+                Custom Selection
+            </button>
+            <button onclick="showComparison('different')" id="btn-different" class="px-5 py-2 rounded-full font-semibold transition duration-200 bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 text-sm sm:text-base">
+                Flagship Preset
+            </button>
+        </div>
+
+        <!-- Manual Selection Dropdowns (Responsive Grid) -->
+        <div id="custom-selector" class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white p-6 rounded-xl shadow-lg mb-8 border-t-4 border-emerald-400">
+            <div>
+                <label for="phone-select-1" class="block text-sm font-medium text-gray-700 mb-1">Select Phone 1:</label>
+                <select id="phone-select-1" onchange="renderCustomComparison()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md"></select>
+            </div>
+            <div>
+                <label for="phone-select-2" class="block text-sm font-medium text-gray-700 mb-1">Select Phone 2:</label>
+                <select id="phone-select-2" onchange="renderCustomComparison()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm rounded-md"></select>
+            </div>
+        </div>
+
+        <!-- Comparison Table Container (Crucial for Mobile Scroll) -->
+        <div class="bg-white rounded-xl shadow-2xl overflow-x-auto">
+            <table id="comparison-table" class="min-w-full comparison-table border-collapse">
+                <!-- Table content will be generated by JavaScript -->
+            </table>
+        </div>
+
+        <p class="text-center text-xs text-gray-500 mt-6">Data is sourced from available online market data and is subject to change. Scroll right to view all comparison data.</p>
+
+    </section>
+    
+    <!-- Brand Detail Full Page View -->
+    <section id="brand-detail-page" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div class="flex justify-end mb-4">
+            <!-- Back to Home Button, using onclick for consistent navigation -->
+            <button onclick="showSection('home-sections')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150 shadow-md text-sm">
+                ← Back to Home
+            </button>
+        </div>
+        <div id="brand-detail-content" class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
+            <!-- Dynamic content will be injected here -->
+        </div>
+    </section>
+    
+    <!-- Authentication View -->
+    <section id="auth-view" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex justify-center">
+        
+        <div class="w-full max-w-lg bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-sky-500">
+            <h2 id="auth-title" class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-4 text-center">Login to CELLINFO</h2>
+            <p id="auth-subtitle" class="text-gray-500 mb-8 text-center text-sm sm:text-base">Access exclusive comparisons and save your favorites.</p>
+
+            <!-- Success/Error Message Box -->
+            <div id="auth-message" class="hidden p-3 mb-4 rounded-lg font-medium text-center text-sm"></div>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label for="login-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="login-email" name="email" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm">
+                    <p id="login-email-error" class="text-xs text-red-500 mt-1 hidden">Please enter a valid email address.</p>
+                </div>
+                
+                <div>
+                    <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="login-password" name="password" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm">
+                </div>
+
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 transition duration-150">
+                    Login
+                </button>
+                
+                <p class="text-center text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="#" onclick="showAuthForm('signup'); return false;" class="font-medium text-emerald-600 hover:text-emerald-700">Sign Up here</a>
+                </p>
+            </form>
+
+            <!-- Sign Up Form (Initially Hidden) -->
+            <form id="signup-form" onsubmit="handleSignUp(event)" class="space-y-6 hidden">
+                <div>
+                    <label for="signup-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="signup-name" name="name" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm">
+                </div>
+                
+                <div>
+                    <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input type="email" id="signup-email" name="email" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm">
+                    <p id="signup-email-error" class="text-xs text-red-500 mt-1 hidden">Please enter a valid email address.</p>
+                </div>
+
+                <div>
+                    <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="signup-password" name="password" required
+                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-sky-500 focus:border-sky-500 text-sm">
+                    <p id="signup-password-error" class="text-xs text-red-500 mt-1 hidden">Password must be 8+ chars, contain 1 uppercase, 1 lowercase, 1 number, and 1 special char (@$!%*?&).</p>
+                </div>
+
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition duration-150">
+                    Sign Up
+                </button>
+
+                <p class="text-center text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="#" onclick="showAuthForm('login'); return false;" class="font-medium text-sky-600 hover:text-sky-700">Login here</a>
+                </p>
+            </form>
+
+        </div>
+
+    </section>
+
+    <!-- Disclaimer View (Initially Hidden) -->
+    <section id="disclaimer-view" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div class="flex justify-end mb-4">
+            <button onclick="showSection('home-sections')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-150 shadow-md text-sm">
+                ← Back to Home
+            </button>
+        </div>
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl border-t-8 border-sky-400">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 text-center">Website Disclaimer</h2>
+            
+            <!-- Content -->
+            <div class="space-y-6 text-gray-700">
+                <p><strong>1. Accuracy of Information:</strong> The content provided on CELLINFO.com is for general informational and comparative purposes only. While we strive to ensure that the mobile phone specifications, prices, release dates, and comparison data are accurate and up-to-date, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability with respect to the website or the information, products, services, or related graphics contained on the website for any purpose. Any reliance you place on such information is therefore strictly at your own risk.</p>
+
+                <p><strong>2. Pricing and Availability:</strong> Prices and availability of mobile phones are subject to change without notice and may vary significantly based on location, retailer, carrier, and time of purchase. CELLINFO.com is not a retailer and does not sell any devices directly.</p>
+
+                <p><strong>3. Limitation of Liability:</strong> In no event will we be liable for any loss or damage including without limitation, indirect or consequential loss or damage, or any loss or damage whatsoever arising from loss of data or profits arising out of, or in connection with, the use of this website.</p>
+
+                <p><strong>4. External Links:</strong> Through this website, you may be able to link to other websites which are not under the control of CELLINFO.com. We have no control over the nature, content, and availability of those sites. The inclusion of any links does not necessarily imply a recommendation or endorse the views expressed within them.</p>
+
+                <p><strong>5. Product Endorsement:</strong> The display of any mobile phone brand or model for comparison does not constitute an endorsement or recommendation of that product by CELLINFO.com.</p>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-500 text-center">Last updated: October 16, 2025</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer and Contact Information (Updated) -->
+    <footer id="contact" class="bg-gray-800 text-white mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+            
+            <!-- Logo/Mission -->
+            <div class="col-span-2 md:col-span-1">
+                <h5 class="font-extrabold text-xl mb-3 text-sky-400">CELLINFO</h5>
+                <p class="text-gray-400 text-sm">Your trusted guide in the world of mobile technology.</p>
+            </div>
+
+            <!-- Company Contact Details -->
+            <div class="col-span-2 md:col-span-1">
+                <h5 class="font-bold text-lg mb-3">Contact Us</h5>
+                <p class="text-xs sm:text-sm text-gray-300">A-65, ACME Co., Street no 12, New York</p>
+                <p class="text-xs sm:text-sm text-gray-300">Phone: +001-28272300</p>
+                <a href="https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fwww.google.com%3Fhl%3Den-US&ec=GAlA8wE&hl=en&flowName=GlifWebSignIn&flowEntry=AddSession&dsh=S254913394%3A1760570928382719" class="text-sky-400 hover:text-sky-300 font-medium text-xs sm:text-sm transition duration-150">
+                    Email: webmaster@cellinfo.com
+                </a>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                 <h5 class="font-bold text-lg mb-3">Quick Access</h5>
+                 <ul class="space-y-1 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-sky-400" onclick="showSection('home-sections')">All Brands</a></li>
+                    <li><a href="#" class="hover:text-sky-400" onclick="showComparison('custom')">Compare Now</a></li>
+                    <li><a href="#" class="hover:text-sky-400" onclick="showSection('auth-view')">Account</a></li>
+                 </ul>
+            </div>
+            
+
+            
+            <!-- Social Media Icons (UPDATED) -->
+            <div class="col-span-2 md:col-span-1">
+                 <h5 class="font-bold text-lg mb-3">Connect</h5>
+                 <div class="flex space-x-4 text-2xl">
+                    <a href="https://github.com" target="_blank" class="text-gray-400 hover:text-white transition duration-150" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="https://facebook.com" target="_blank" class="text-gray-400 hover:text-blue-500 transition duration-150" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="text-gray-400 hover:text-pink-500 transition duration-150" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="text-gray-400 hover:text-sky-400 transition duration-150" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                 </div>
+            </div>
+
+        </div>
+        <div class="border-t border-gray-700 py-4">
+            <p class="text-center text-gray-500 text-xs">&copy; 2025 CELLINFO. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // Sample Mobile Phone Data (EXPANDED) - Used for comparison and detail pages
+        const ALL_PHONES = [
+            // Apple Models (4 models)
+            { name: "iPhone 16 Pro Max", id: "ap16pm", image: "https://placehold.co/100x150/f7fee7/1f2937?text=16+Pro+Max", Brand: "Apple", Price: "$1199", Release: "Q4 2025", Display: "6.9\" LTPO OLED", Processor: "Apple A18 Bionic", RAM: "8 GB", Camera: "48 MP Pro (OIS)", Battery: "4420 mAh" },
+            { name: "iPhone 16 Pro", id: "ap16p", image: "https://placehold.co/100x150/f7fee7/1f2937?text=iPhone+16", Brand: "Apple", Price: "$999", Release: "Q4 2025", Display: "6.7\" LTPO OLED", Processor: "Apple A18 Bionic", RAM: "8 GB", Camera: "48 MP Pro (OIS)", Battery: "4420 mAh" },
+            { name: "iPhone 16", id: "ap16", image: "https://placehold.co/100x150/f7fee7/1f2937?text=iPhone+16", Brand: "Apple", Price: "$799", Release: "Q4 2025", Display: "6.1\" OLED", Processor: "Apple A18", RAM: "6 GB", Camera: "12 MP (OIS)", Battery: "3900 mAh" },
+            { name: "iPhone SE (4th Gen)", id: "apse4", image: "https://placehold.co/100x150/f7fee7/1f2937?text=iPhone+SE", Brand: "Apple", Price: "$429", Release: "Q2 2025", Display: "6.1\" OLED", Processor: "Apple A17 Bionic", RAM: "6 GB", Camera: "12 MP (OIS)", Battery: "3500 mAh" },
+            
+            // Samsung Models (4 models)
+            { name: "Galaxy S25 Ultra", id: "sgs25u", image: "https://placehold.co/100x150/f7fee7/1f2937?text=S25+Ultra", Brand: "Samsung", Price: "$1199", Release: "Q1 2026", Display: "6.9\" Dynamic AMOLED 2X", Processor: "Snapdragon 8 Gen 5", RAM: "12 GB", Camera: "200 MP (OIS)", Battery: "5000 mAh" },
+            { name: "Galaxy Z Fold 7", id: "sgzf7", image: "https://placehold.co/100x150/f7fee7/1f2937?text=Fold+7", Brand: "Samsung", Price: "$1799", Release: "Q3 2025", Display: "7.6\" Foldable AMOLED", Processor: "Snapdragon 8 Gen 4", RAM: "16 GB", Camera: "50 MP Wide (OIS)", Battery: "4400 mAh" },
+            { name: "Galaxy S24 FE", id: "sgs24fe", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=S24+FE", Brand: "Samsung", Price: "$699", Release: "Q4 2024", Display: "6.4\" AMOLED", Processor: "Exynos 2400", RAM: "8 GB", Camera: "50 MP Wide (OIS)", Battery: "4500 mAh" },
+            { name: "Galaxy A56", id: "sga56", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=A56", Brand: "Samsung", Price: "$450", Release: "Q4 2024", Display: "6.6\" AMOLED", Processor: "Snapdragon 7 Gen 3", RAM: "8 GB", Camera: "64 MP (OIS)", Battery: "5000 mAh" },
+            
+            // Nokia Models (4 models - 1 added)
+            { name: "Nokia X22 5G", id: "nx22", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=X22", Brand: "Nokia", Price: "$550", Release: "Q1 2025", Display: "6.7\" OLED", Processor: "Snapdragon 7 Gen 1", RAM: "8 GB", Camera: "108 MP", Battery: "5000 mAh" },
+            { name: "Nokia X21", id: "nx21", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=X21", Brand: "Nokia", Price: "$400", Release: "Q3 2024", Display: "6.4\" LCD", Processor: "Snapdragon 695", RAM: "6 GB", Camera: "64 MP", Battery: "4500 mAh" },
+            { name: "Nokia C300", id: "nc300", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=C300", Brand: "Nokia", Price: "$180", Release: "Q2 2024", Display: "6.5\" LCD", Processor: "Helio G35", RAM: "4 GB", Camera: "13 MP", Battery: "4000 mAh" },
+            { name: "Nokia X100 5G", id: "nx100", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=X100", Brand: "Nokia", Price: "$350", Release: "Q4 2023", Display: "6.67\" LCD", Processor: "Snapdragon 480", RAM: "6 GB", Camera: "48 MP", Battery: "4470 mAh" },
+            
+            // Google Models (4 models - 1 added)
+            { name: "Pixel 9 Pro", id: "gp9p", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=9+Pro", Brand: "Google", Price: "$999", Release: "Q4 2025", Display: "6.7\" LTPO OLED", Processor: "Google Tensor G4", RAM: "12 GB", Camera: "50 MP Wide (OIS)", Battery: "4900 mAh" },
+            { name: "Pixel 9", id: "gp9", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Pixel+9", Brand: "Google", Price: "$799", Release: "Q4 2025", Display: "6.3\" OLED", Processor: "Google Tensor G4", RAM: "8 GB", Camera: "50 MP Wide (OIS)", Battery: "4500 mAh" },
+            { name: "Pixel 8a", id: "gp8a", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=8a", Brand: "Google", Price: "$499", Release: "Q2 2024", Display: "6.1\" OLED", Processor: "Google Tensor G3", RAM: "8 GB", Camera: "64 MP", Battery: "4492 mAh" },
+            { name: "Pixel 7a", id: "gp7a", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=7a", Brand: "Google", Price: "$400", Release: "Q2 2023", Display: "6.1\" OLED", Processor: "Google Tensor G2", RAM: "8 GB", Camera: "64 MP", Battery: "4385 mAh" },
+            
+            // Xiaomi Models (4 models - 1 added)
+            { name: "Xiaomi 15 Pro", id: "x15p", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=15+Pro", Brand: "Xiaomi", Price: "$899", Release: "Q1 2026", Display: "6.73\" LTPO AMOLED", Processor: "Snapdragon 8 Gen 5", RAM: "16 GB", Camera: "50 MP Triple (OIS)", Battery: "5000 mAh" },
+            { name: "Xiaomi 14T Lite", id: "x14tl", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=14T", Brand: "Xiaomi", Price: "$420", Release: "Q4 2024", Display: "6.7\" OLED", Processor: "Dimensity 8200", RAM: "12 GB", Camera: "108 MP", Battery: "4800 mAh" },
+            { name: "Redmi Note 13", id: "rn13", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Note+13", Brand: "Xiaomi", Price: "$250", Release: "Q1 2024", Display: "6.67\" AMOLED", Processor: "Snapdragon 685", RAM: "6 GB", Camera: "50 MP", Battery: "5000 mAh" },
+            { name: "Xiaomi 14", id: "x14", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Xiaomi+14", Brand: "Xiaomi", Price: "$750", Release: "Q4 2024", Display: "6.36\" LTPO AMOLED", Processor: "Snapdragon 8 Gen 3", RAM: "12 GB", Camera: "50 MP Triple (OIS)", Battery: "4610 mAh" },
+            
+            // Motorola Models (4 models - 1 added)
+            { name: "Motorola Edge 50 Ultra", id: "me50u", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Edge+50+U", Brand: "Motorola", Price: "$799", Release: "Q2 2025", Display: "6.7\" P-OLED", Processor: "Snapdragon 8 Gen 4", RAM: "12 GB", Camera: "50 MP Triple (OIS)", Battery: "4500 mAh" },
+            { name: "Motorola Edge 50", id: "me50", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Edge+50", Brand: "Motorola", Price: "$480", Release: "Q3 2024", Display: "6.5\" P-OLED", Processor: "Snapdragon 7 Gen 2", RAM: "8 GB", Camera: "50 MP (OIS)", Battery: "5200 mAh" },
+            { name: "Moto G Power 2024", id: "mgp24", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=G+Power", Brand: "Motorola", Price: "$200", Release: "Q1 2024", Display: "6.7\" IPS LCD", Processor: "Helio G37", RAM: "4 GB", Camera: "50 MP", Battery: "6000 mAh" },
+            { name: "Motorola Razr 40", id: "mrzr40", image: "https://placehold.co/100x150/e0f2f1/064e3b?text=Razr+40", Brand: "Motorola", Price: "$700", Release: "Q3 2023", Display: "6.9\" Foldable P-OLED", Processor: "Snapdragon 7 Gen 1", RAM: "8 GB", Camera: "64 MP (OIS)", Battery: "4200 mAh" }
+        ];
+
+        const COMPARISON_DATA = {
+            different: {
+                title: "Flagship Showdown: Apple vs. Samsung Preset",
+                phones: [
+                    ALL_PHONES.find(p => p.id === 'ap16p'),
+                    ALL_PHONES.find(p => p.id === 'sgs25u')
+                ].filter(Boolean),
+            },
+            custom: {
+                title: "Custom Phone Comparison",
+                phones: []
+            }
+        };
+
+        // --- View Management Functions ---
+
+        /**
+         * Hides all content sections and shows the specified one.
+         */
+        function showSection(sectionId) {
+            // Close mobile menu first if open
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('open')) {
+                toggleMobileMenu();
+            }
+
+            const home = document.getElementById('home-sections');
+            const comparison = document.getElementById('comparison-view');
+            const brandPage = document.getElementById('brand-detail-page');
+            const authView = document.getElementById('auth-view'); 
+            const disclaimer = document.getElementById('disclaimer-view'); // <-- Added for new view
+
+            // Hide all pages
+            home.classList.add('hidden');
+            comparison.classList.add('hidden');
+            brandPage.classList.add('hidden');
+            authView.classList.add('hidden'); 
+            disclaimer.classList.add('hidden'); // <-- Hide disclaimer
+
+            // Show the requested page
+            if (sectionId === 'home-sections') {
+                home.classList.remove('hidden');
+            } else if (sectionId === 'comparison-view') {
+                comparison.classList.remove('hidden');
+                populateDropdowns();
+            } else if (sectionId === 'brand-detail-page') {
+                brandPage.classList.remove('hidden');
+            } else if (sectionId === 'auth-view') {
+                authView.classList.remove('hidden');
+                // Default to login form when navigating to auth view
+                showAuthForm('login'); 
+            } else if (sectionId === 'disclaimer-view') { // <-- Handle new disclaimer view
+                disclaimer.classList.remove('hidden'); 
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /**
+         * Toggles the mobile menu open/closed state.
+         */
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('open');
+        }
+
+
+        // --- Comparison Functions (Unchanged) ---
+        function showComparison(type) {
+            showSection('comparison-view');
+            const title = document.getElementById('comparison-title');
+            const btnCustom = document.getElementById('btn-custom');
+            const btnDifferent = document.getElementById('btn-different');
+            const customSelector = document.getElementById('custom-selector');
+
+            if (type === 'custom') {
+                btnCustom.className = 'px-5 py-2 rounded-full font-semibold transition duration-200 bg-sky-500 text-white shadow-md text-sm sm:text-base';
+                btnDifferent.className = 'px-5 py-2 rounded-full font-semibold transition duration-200 bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 text-sm sm:text-base';
+                customSelector.classList.remove('hidden');
+                title.textContent = "Custom Phone Comparison";
+                renderCustomComparison();
+            } else { // 'different' preset
+                btnDifferent.className = 'px-5 py-2 rounded-full font-semibold transition duration-200 bg-sky-500 text-white shadow-md text-sm sm:text-base';
+                btnCustom.className = 'px-5 py-2 rounded-full font-semibold transition duration-200 bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 text-sm sm:text-base';
+                customSelector.classList.add('hidden');
+                title.textContent = COMPARISON_DATA['different'].title;
+                renderTable(COMPARISON_DATA['different']);
+            }
+        }
+
+        function populateDropdowns() {
+            const select1 = document.getElementById('phone-select-1');
+            const select2 = document.getElementById('phone-select-2');
+
+            select1.innerHTML = '';
+            select2.innerHTML = '';
+            
+            const defaultOption = '<option value="">-- Select a Phone --</option>';
+            select1.innerHTML += defaultOption;
+            select2.innerHTML += defaultOption;
+
+            ALL_PHONES.forEach(phone => {
+                const option = `<option value="${phone.id}">${phone.name} (${phone.Brand})</option>`;
+                select1.innerHTML += option;
+                select2.innerHTML += option;
+            });
+
+            // Set default selection to the first two unique phones in the list
+            select1.value = ALL_PHONES[0].id; 
+            select2.value = ALL_PHONES[1].id;
+        }
+
+        function renderCustomComparison() {
+            const select1Id = document.getElementById('phone-select-1').value;
+            const select2Id = document.getElementById('phone-select-2').value;
+            const table = document.getElementById('comparison-table');
+
+            if (!select1Id || !select2Id) {
+                table.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-gray-500">Please select two different phones to start the comparison.</td></tr>';
+                return;
+            }
+
+            if (select1Id === select2Id) {
+                const selectedPhone = ALL_PHONES.find(p => p.id === select1Id).name;
+                
+                table.innerHTML = `
+                    <tr class="bg-red-50">
+                        <td colspan="3" class="text-center py-10">
+                            <p class="text-2xl font-bold text-red-600 mb-2">🛑 Comparison Error</p>
+                            <p class="text-gray-700">You cannot compare **${selectedPhone}** against itself. Please select two unique mobile phone models.</p>
+                            <!-- NOTE: Using a custom message box instead of alert() as per instructions -->
+                            <div class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg shadow-md inline-block">Acknowledge Error: Select unique models.</div>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('comparison-title').textContent = "Custom Phone Comparison (Error)";
+                return;
+            }
+
+            const phone1 = ALL_PHONES.find(p => p.id === select1Id);
+            const phone2 = ALL_PHONES.find(p => p.id === select2Id);
+
+            COMPARISON_DATA.custom.phones = [phone1, phone2].filter(Boolean);
+            
+            renderTable(COMPARISON_DATA.custom);
+        }
+
+        function renderTable(data) {
+            const table = document.getElementById('comparison-table');
+            const phones = data.phones;
+
+            if (phones.length === 0 || phones.some(p => !p)) {
+                table.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-gray-500">Selection incomplete. Please select two phones.</td></tr>';
+                return;
+            }
+
+            let allFeatures = new Set();
+            phones.forEach(phone => {
+                // Ensure all keys are included except name, image, and id
+                Object.keys(phone).filter(key => key !== 'name' && key !== 'image' && key !== 'id').forEach(key => allFeatures.add(key));
+            });
+            const features = Array.from(allFeatures);
+
+            let html = '<thead><tr>';
+            html += '<th class="feature-cell sticky left-0 z-10 bg-emerald-200 text-xs sm:text-sm">Feature</th>';
+            
+            phones.forEach(phone => {
+                const phoneName = phone ? phone.name : 'N/A';
+                const phoneImage = phone ? phone.image : 'https://placehold.co/100x150/e0f2f1/064e3b?text=N%2FA';
+                
+                html += `<th class="text-center bg-emerald-200">
+                            <img src="${phoneImage}" alt="${phoneName}" class="h-16 w-auto mx-auto mb-1 rounded-lg shadow-sm" onerror="this.onerror=null;this.src='https://placehold.co/100x100/e0f2f1/064e3b?text=N%2FA';">
+                            <span class="block text-xs sm:text-sm font-bold text-sky-700">${phoneName}</span>
+                        </th>`;
+            });
+            html += '</tr></thead><tbody>';
+
+            features.forEach(featureKey => {
+                html += `<tr class="data-row">`;
+                html += `<td class="feature-cell sticky left-0 z-[5] text-emerald-800 bg-white text-xs sm:text-sm">${featureKey.replace(/([A-Z])/g, ' $1').trim()}</td>`;
+                
+                phones.forEach(phone => {
+                    const value = phone ? phone[featureKey] : 'N/A';
+                    html += `<td class="text-xs sm:text-sm">${value || 'N/A'}</td>`;
+                });
+                html += `</tr>`;
+            });
+
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        /**
+         * Function to generate and display the detailed list page for a selected brand.
+         */
+        function showBrandDetail(brandName) {
+            showSection('brand-detail-page');
+
+            const content = document.getElementById('brand-detail-content');
+            const brandPhones = ALL_PHONES.filter(phone => phone.Brand === brandName);
+            
+            let phoneListHTML = '';
+            if (brandPhones.length > 0) {
+                phoneListHTML = `
+                    <div class="overflow-x-auto mt-6">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Model</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Key Feature</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${brandPhones.map(phone => `
+                                    <tr class="detail-row">
+                                        <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            ${phone.name}
+                                        </td>
+                                        <td class="px-3 py-4 whitespace-nowrap text-sm text-emerald-600 font-bold">
+                                            ${phone.Price}
+                                        </td>
+                                        <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500 hidden sm:table-cell">
+                                            ${phone.Display} / ${phone.Camera}
+                                        </td>
+                                        <td class="px-3 py-4 whitespace-nowrap text-sm">
+                                            <a href="#" class="detail-doc-link text-xs sm:text-sm" onclick="displayAuthMessage('auth-message', 'info', 'Simulated Download: Detailed Word Document for ${phone.name} downloaded! (Check console for event log)', 'brand-detail-page'); return false;">
+                                                Specs (Doc)
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                 phoneListHTML = `<p class="text-center text-gray-500 py-10">No specific models found for ${brandName} in our sample data.</p>`;
+            }
+
+            content.innerHTML = `
+                <div class="detail-header">
+                    <h2 class="text-4xl font-extrabold text-gray-900">${brandName.toUpperCase()} PHONES</h2>
+                    <p class="text-gray-600 mt-1">${brandName} - All Models: Full list of phones with prices and specifications.</p>
+                </div>
+
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Current Models:</h3>
+                
+                ${phoneListHTML}
+
+                <div class="mt-6 text-xs text-gray-500">
+                    *Click the "Specs (Word Doc)" link for a simulated download of detailed specifications.
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // --- Authentication and Regex Functions (Unchanged) ---
+
+        // Regex for email validation: standard check for user@domain.tld
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        // Regex for strong password validation: Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char (@$!%*?&)
+        const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        /**
+         * Toggles between Login and Sign Up forms.
+         */
+        function showAuthForm(type) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+            
+            // Clear any previous messages
+            document.getElementById('auth-message').classList.add('hidden');
+            document.getElementById('auth-message').innerHTML = '';
+
+            if (type === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                title.textContent = 'Login to CELLINFO';
+                subtitle.textContent = 'Access exclusive comparisons and save your favorites.';
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                title.textContent = 'Create a CELLINFO Account';
+                subtitle.textContent = 'Join now to unlock the full power of our comparison tools.';
+            }
+        }
+
+        /**
+         * Displays a temporary message in the auth message box.
+         */
+        function displayAuthMessage(id, type, message) {
+            const msgBox = document.getElementById(id);
+            // Clear previous classes
+            msgBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+            msgBox.innerHTML = message;
+
+            if (type === 'error') {
+                msgBox.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                msgBox.classList.add('bg-green-100', 'text-green-700');
+            } else { // info
+                 msgBox.classList.add('bg-sky-100', 'text-sky-700');
+            }
+            
+            // Scroll to the message box
+            msgBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        /**
+         * Validates and handles the Login form submission.
+         */
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const emailError = document.getElementById('login-email-error');
+            
+            let isValid = true;
+
+            // 1. Email Validation (Regex)
+            if (!EMAIL_REGEX.test(emailInput.value)) {
+                emailInput.classList.add('border-red-500');
+                emailError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('border-red-500');
+                emailError.classList.add('hidden');
+            }
+
+            if (isValid) {
+                // Simulate successful login
+                console.log('Login attempt successful for:', emailInput.value);
+                displayAuthMessage('auth-message', 'success', `Welcome back, ${emailInput.value}! Login successful.`);
+                
+                // Clear fields after simulated success
+                emailInput.value = '';
+                passwordInput.value = '';
+            } else {
+                displayAuthMessage('auth-message', 'error', 'Login failed. Please correct the errors and try again.');
+            }
+        }
+
+        /**
+         * Validates and handles the Sign Up form submission.
+         */
+        function handleSignUp(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('signup-email');
+            const passwordInput = document.getElementById('signup-password');
+            const emailError = document.getElementById('signup-email-error');
+            const passwordError = document.getElementById('signup-password-error');
+            
+            let isValid = true;
+
+            // 1. Email Validation (Regex)
+            if (!EMAIL_REGEX.test(emailInput.value)) {
+                emailInput.classList.add('border-red-500');
+                emailError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('border-red-500');
+                emailError.classList.add('hidden');
+            }
+
+            // 2. Password Validation (Strong Password Regex)
+            if (!PASSWORD_REGEX.test(passwordInput.value)) {
+                passwordInput.classList.add('border-red-500');
+                passwordError.classList.remove('hidden');
+                isValid = false;
+            } else {
+                passwordInput.classList.remove('border-red-500');
+                passwordError.classList.add('hidden');
+            }
+
+            if (isValid) {
+                // Simulate successful sign up
+                console.log('Sign Up successful for:', emailInput.value);
+                displayAuthMessage('auth-message', 'success', `Account created successfully for ${emailInput.value}! You can now login.`);
+
+                // Clear fields after simulated success
+                document.getElementById('signup-name').value = '';
+                emailInput.value = '';
+                passwordInput.value = '';
+                
+                // Optionally switch to login form
+                setTimeout(() => showAuthForm('login'), 2000); 
+
+            } else {
+                displayAuthMessage('auth-message', 'error', 'Sign Up failed. Please correct the errors and ensure a strong password.');
+            }
+        }
+
+        // --- Event Listener for Brand Card Clicks ---
+        document.querySelectorAll('.brand-card-link').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault(); 
+                
+                const brandName = this.getAttribute('data-brand');
+                if (brandName) {
+                    showBrandDetail(brandName);
+                }
+            });
+        });
+
+        // Initialize the page view on load
+        document.addEventListener('DOMContentLoaded', () => {
+             showSection('home-sections');
+             populateDropdowns();
+        });
+    </script>
+</body>
+</html>
